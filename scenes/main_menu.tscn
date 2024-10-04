@@ -1,0 +1,100 @@
+[gd_scene load_steps=7 format=3 uid="uid://t858lk8h1euw"]
+
+[ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_1g0ou"]
+[ext_resource type="Texture2D" uid="uid://c4nktx3sg32c3" path="res://assets/MENU_BACKGROUND.jpeg" id="1_85nvr"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_n2vo2"]
+texture = ExtResource("1_85nvr")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mkn72"]
+bg_color = Color(0.0980985, 0.0980985, 0.0980985, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 8
+shadow_offset = Vector2(2, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bljl3"]
+bg_color = Color(0.0687983, 0.0687983, 0.0687983, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 8
+shadow_offset = Vector2(2, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2hio6"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 8
+shadow_offset = Vector2(2, 2)
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1g0ou")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_n2vo2")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -110.0
+offset_top = -94.0
+offset_right = 110.0
+offset_bottom = 94.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="button_start" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(220, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_mkn72")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bljl3")
+theme_override_styles/normal = SubResource("StyleBoxFlat_2hio6")
+text = "Começar"
+
+[node name="button_settings" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(220, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_mkn72")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bljl3")
+theme_override_styles/normal = SubResource("StyleBoxFlat_2hio6")
+text = "Configurações"
+
+[node name="button_exit" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(220, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_mkn72")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bljl3")
+theme_override_styles/normal = SubResource("StyleBoxFlat_2hio6")
+text = "Sair"
+
+[connection signal="pressed" from="VBoxContainer/button_start" to="." method="_on_button_start_pressed"]
+[connection signal="pressed" from="VBoxContainer/button_exit" to="." method="_on_button_exit_pressed"]
