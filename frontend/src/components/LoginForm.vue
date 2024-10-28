@@ -2,8 +2,9 @@
   <div class="container mx-auto p-4 sm:p-6 md:p-10">
     <div class="form-wrapper mx-auto w-full md:w-1/2">
       <div class="card shadow-md rounded-md">
-        <Form @submit="onSubmit" class="login-form">
+        <Form @submit="onSubmit" :validation-schema="schema" class="login-form">
           <div class="grid grid-cols-1 gap-4">
+            <!-- Username Field -->
             <Field name="username" v-slot="{ value, handleChange, errorMessage }">
               <InputGroup>
                 <InputGroupAddon>
@@ -11,19 +12,20 @@
                 </InputGroupAddon>
                 <FloatLabel>
                   <InputText
-                      id="username"
-                      v-model="username"
-                      :model-value="value"
-                      @input="handleChange"
-                      class="w-full"
-                      :class="{ 'p-invalid': errorMessage }"
+                    id="username"
+                    v-model="username"
+                    :model-value="value"
+                    @input="handleChange"
+                    class="w-full"
+                    :class="{ 'p-invalid': errorMessage }"
                   />
-                  <label for="username">Nome do usuario(a)</label>
+                  <label for="username">Nome do usuário(a)</label>
                 </FloatLabel>
               </InputGroup>
               <small v-if="errorMessage" class="p-error">{{ errorMessage }}</small>
             </Field>
 
+            <!-- Password Field -->
             <Field name="password" v-slot="{ value, handleChange, errorMessage }">
               <InputGroup>
                 <InputGroupAddon>
@@ -31,13 +33,13 @@
                 </InputGroupAddon>
                 <FloatLabel>
                   <InputText
-                      id="password"
-                      type="password"
-                      v-model="password"
-                      :model-value="value"
-                      @input="handleChange"
-                      class="w-full"
-                      :class="{ 'p-invalid': errorMessage }"
+                    id="password"
+                    type="password"
+                    v-model="password"
+                    :model-value="value"
+                    @input="handleChange"
+                    class="w-full"
+                    :class="{ 'p-invalid': errorMessage }"
                   />
                   <label for="password">Senha</label>
                 </FloatLabel>
@@ -45,7 +47,7 @@
               <small v-if="errorMessage" class="p-error">{{ errorMessage }}</small>
             </Field>
 
-            <!-- Buttons organized in a row, responsive based on screen size -->
+            <!-- Buttons -->
             <div class="w-full flex flex-row gap-4">
               <Button type="submit" label="Entrar" icon="pi pi-sign-in" class="w-full" />
               <Button label="Registrar" icon="pi pi-user-plus" class="w-full" severity="success" />
@@ -59,6 +61,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
+import { useRouter } from 'vue-router'; // Importar o roteador para redirecionar após o login
 import { Form, Field } from 'vee-validate';
 import * as yup from 'yup';
 import InputText from 'primevue/inputtext';
@@ -78,16 +81,23 @@ export default defineComponent({
     Field,
   },
   setup() {
+    const router = useRouter(); // Instância do roteador
+
     const username = ref('');
     const password = ref('');
 
+    // Definição de esquema de validação com Yup
     const schema = yup.object({
-      username: yup.string().required('Username is required'),
-      password: yup.string().required('Password is required'),
+      username: yup.string().required('O nome de usuário é obrigatório'),
+      password: yup.string().required('A senha é obrigatória'),
     });
 
-    const onSubmit = () => {
-      alert('Form submitted');
+    // Função para lidar com a submissão do formulário
+    const onSubmit = async (values: { username: string; password: string }) => {
+      // Aqui você pode adicionar a lógica de autenticação
+      // Se a autenticação for bem-sucedida, redireciona o usuário
+      console.log('Usuário logado:', values);
+      router.push({ name: 'GameSelection' }); // Redireciona para a página de seleção de jogos
     };
 
     return {
