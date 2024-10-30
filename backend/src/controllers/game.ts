@@ -17,14 +17,29 @@ export class GameController {
       where: { id: user.id },
       data: { totalScore: { increment: score } },
     });
+
+    return res.status(200).send();
   }
 
-  static async getLeaderboard() {
+  static async getLeaderboard(req, res) {
     const users = await prisma.user.findMany({
       orderBy: { totalScore: "desc" },
       select: { name: true, totalScore: true },
     });
 
-    return users;
+    return res.status(200).send(users);
+  }
+
+  static async getRanking(req, res) {
+    const user = req.user;
+
+    const users = await prisma.user.findMany({
+      orderBy: { totalScore: "desc" },
+      select: { id: true, name: true, totalScore: true },
+    });
+
+    const raking = users.findIndex((a) => a.id === user.id) + 1;
+
+    return res.status(200).send(raking);
   }
 }

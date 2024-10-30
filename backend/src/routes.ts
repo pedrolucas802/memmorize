@@ -15,5 +15,6 @@ gameRouter.post(
   GameController.registerMatch
 );
 gameRouter.get("/leaderboard", authMiddleware, GameController.getLeaderboard);
+gameRouter.get("/leaderboard/me", authMiddleware, GameController.getRanking);
 
 export { authRouter, gameRouter };
