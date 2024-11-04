@@ -1,23 +1,15 @@
 <template>
   <div id="app">
-    <NavBar></NavBar>
-    <div class="content-wrapper">
-      <LoginForm></LoginForm>
-    </div>
+    <router-view />
+
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import LoginForm from "@/components/LoginForm.vue";
-import NavBar from "@/components/NavBar.vue";
 
 export default defineComponent({
   name: 'App',
-  components: {
-    NavBar,
-    LoginForm
-  }
 });
 </script>
 

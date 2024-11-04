@@ -8,8 +8,13 @@ import 'primevue/resources/primevue.min.css';            // Core CSS
 import 'primeicons/primeicons.css';                      // PrimeIcons
 import 'primeflex/primeflex.css';                        // PrimeFlex for layout
 
+// Import Vue Router
+import router from './router'; // Certifique-se de que o arquivo `router.ts` está configurado
+
 const app = createApp(App);
 
+// Usar PrimeVue e o Vue Router
 app.use(PrimeVue);
+app.use(router);
 
 app.mount('#app');
