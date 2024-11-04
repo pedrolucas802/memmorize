@@ -1,109 +1,117 @@
 <template>
-  <div class="container mx-auto p-4 sm:p-6 md:p-10">
-    <div class="form-wrapper mx-auto w-full md:w-1/2">
-      <div class="card shadow-md rounded-md">
-        <Form @submit="onSubmit" :validation-schema="schema" class="login-form">
-          <div class="grid grid-cols-1 gap-4">
-            <!-- Username Field -->
-            <Field name="username" v-slot="{ value, handleChange, errorMessage }">
-              <InputGroup>
-                <InputGroupAddon>
-                  <i class="pi pi-user"></i>
-                </InputGroupAddon>
-                <FloatLabel>
-                  <InputText
-                    id="username"
-                    v-model="username"
-                    :model-value="value"
-                    @input="handleChange"
-                    class="w-full"
-                    :class="{ 'p-invalid': errorMessage }"
-                  />
-                  <label for="username">Nome do usuário(a)</label>
-                </FloatLabel>
-              </InputGroup>
-              <small v-if="errorMessage" class="p-error">{{ errorMessage }}</small>
-            </Field>
+  <div class="login-page">
+    <h2 class="main-title">Faça login na sua conta</h2>
 
-            <!-- Password Field -->
-            <Field name="password" v-slot="{ value, handleChange, errorMessage }">
-              <InputGroup>
-                <InputGroupAddon>
-                  <i class="pi pi-lock"></i>
-                </InputGroupAddon>
-                <FloatLabel>
-                  <InputText
-                    id="password"
-                    type="password"
-                    v-model="password"
-                    :model-value="value"
-                    @input="handleChange"
-                    class="w-full"
-                    :class="{ 'p-invalid': errorMessage }"
-                  />
-                  <label for="password">Senha</label>
-                </FloatLabel>
-              </InputGroup>
-              <small v-if="errorMessage" class="p-error">{{ errorMessage }}</small>
-            </Field>
-
-            <!-- Buttons -->
-            <div class="w-full flex flex-row gap-4">
-              <Button type="submit" label="Entrar" icon="pi pi-sign-in" class="w-full" />
-              <Button label="Registrar" icon="pi pi-user-plus" class="w-full" severity="success" />
-            </div>
-          </div>
-        </Form>
-      </div>
+    <!-- Mensagem de Sucesso -->
+    <div v-if="successMessage" class="success-message">
+      {{ successMessage }}
     </div>
+
+    <!-- Mensagem de Erro (não será exibida enquanto o backend não estiver integrado) -->
+    <div v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+
+    <form v-if="!successMessage" @submit.prevent="onSubmit" class="login-form">
+      <!-- Nome do usuário -->
+      <div class="input-group">
+        <label for="username" class="input-label">Nome do usuário</label>
+        <div class="input-wrapper">
+          <span class="input-icon"><i class="pi pi-user"></i></span>
+          <input
+            type="text"
+            id="username"
+            v-model="username"
+            placeholder="Digite seu nome de usuário"
+            class="custom-input"
+            required
+          />
+        </div>
+      </div>
+
+      <!-- Senha -->
+      <div class="input-group">
+        <label for="password" class="input-label">Senha</label>
+        <div class="input-wrapper">
+          <span class="input-icon"><i class="pi pi-lock"></i></span>
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            placeholder="Digite sua senha"
+            class="custom-input"
+            required
+          />
+        </div>
+      </div>
+
+      <!-- Botão de Login -->
+      <div class="button-container">
+        <button type="submit" class="login-button">Entrar</button>
+      </div>
+    </form>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { useRouter } from 'vue-router'; // Importar o roteador para redirecionar após o login
-import { Form, Field } from 'vee-validate';
-import * as yup from 'yup';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import InputGroup from 'primevue/inputgroup';
-import FloatLabel from 'primevue/floatlabel';
-import InputGroupAddon from "primevue/inputgroupaddon";
+import { useRouter } from 'vue-router';
+// import axios from 'axios'; // Comentado enquanto o backend não está integrado
 
 export default defineComponent({
-  components: {
-    InputText,
-    Button,
-    InputGroup,
-    InputGroupAddon,
-    FloatLabel,
-    Form,
-    Field,
-  },
   setup() {
-    const router = useRouter(); // Instância do roteador
-
+    const router = useRouter();
     const username = ref('');
     const password = ref('');
+    const successMessage = ref('');
+    const errorMessage = ref(''); // Mensagem de erro deixada como vazia, pois não será utilizada agora
 
-    // Definição de esquema de validação com Yup
-    const schema = yup.object({
-      username: yup.string().required('O nome de usuário é obrigatório'),
-      password: yup.string().required('A senha é obrigatória'),
-    });
+    const onSubmit = () => {
+      // Lógica comentada para integração com o backend:
+      /*
+      try {
+        const response = await axios.post('/login', {
+          email: username.value,
+          password: password.value,
+        });
 
-    // Função para lidar com a submissão do formulário
-    const onSubmit = async (values: { username: string; password: string }) => {
-      // Aqui você pode adicionar a lógica de autenticação
-      // Se a autenticação for bem-sucedida, redireciona o usuário
-      console.log('Usuário logado:', values);
-      router.push({ name: 'GameSelection' }); // Redireciona para a página de seleção de jogos
+        // Armazena o token JWT no localStorage
+        localStorage.setItem('jwtToken', response.data.token);
+
+        successMessage.value = 'Login realizado com sucesso! Redirecionando para a página inicial...';
+        errorMessage.value = ''; // Limpa mensagem de erro
+        username.value = '';
+        password.value = '';
+
+        setTimeout(() => {
+          router.push({ name: 'UserHome' });
+        }, 3000);
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+          errorMessage.value = error.response.data.message || 'Email ou senha incorretos.';
+        } else {
+          errorMessage.value = 'Erro ao conectar com o servidor. Tente novamente mais tarde.';
+        }
+        successMessage.value = ''; // Limpa mensagem de sucesso
+      }
+      */
+
+      // Lógica original que simula o login sem autenticação real
+      successMessage.value = 'Login realizado com sucesso! Redirecionando para a página inicial...';
+      username.value = '';
+      password.value = '';
+
+      // Redireciona para a página inicial após 3 segundos
+      setTimeout(() => {
+        router.push({ name: 'UserHome' });
+      }, 3000);
     };
 
     return {
       username,
       password,
-      schema,
+      successMessage,
+      errorMessage,
       onSubmit,
     };
   },
@@ -111,49 +119,113 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Base Styles */
-.card {
-  @apply shadow-md rounded-md;
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-family: 'Baloo 2', sans-serif;
 }
 
-.form-wrapper {
-  @apply mx-auto; /* Centers the form horizontally */
+.main-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #43636E;
+  margin-bottom: 20px;
 }
 
-.p-error {
-  color: red;
+.login-form {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.p-invalid {
-  border-color: red;
+/* Estilo do grupo de input */
+.input-group {
+  display: flex;
+  flex-direction: column;
 }
 
-/* Responsive using media queries */
-@media (max-width: 768px) {
-  .form-wrapper {
-    width: 90%; /* Make form take more space on small screens */
-  }
-  .login-form {
-    padding: 1rem; /* Add padding for small screens */
-  }
+.input-label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #43636E;
+  margin-bottom: 5px;
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
-  .form-wrapper {
-    width: 70%; /* For tablets, form is 70% of the screen */
-  }
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 2px solid #43636E;
+  border-radius: 8px;
+  padding: 8px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-@media (min-width: 1025px) {
-  .form-wrapper {
-    width: 50%; /* On large screens, form takes 50% width */
-  }
+.input-icon {
+  margin-right: 10px;
+  color: #43636E;
 }
 
-@media (max-width: 640px) {
-  /* Stack buttons vertically on small screens */
-  .flex-row {
-    flex-direction: column;
-  }
+.custom-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #43636E;
+}
+
+.custom-input::placeholder {
+  color: #a0a0a0;
+}
+
+/* Mensagem de sucesso */
+.success-message {
+  background-color: #42b983;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Mensagem de erro */
+.error-message {
+  background-color: #d9534f;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Estilo do botão de login */
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.login-button {
+  background-color: #43636E;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.login-button:hover {
+  background-color: #365555;
+  transform: scale(1.05);
 }
 </style>

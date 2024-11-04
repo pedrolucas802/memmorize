@@ -1,23 +1,39 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import LoginForm from '../components/LoginForm.vue';
-import GameSelection from '../components/games/GameSelection.vue'; // Página com as opções de jogos
+import WelcomePage from '../components/WelcomePage.vue'; // Página de login
+import RegisterPage from '../components/RegisterPage.vue';
+import LoginForm from '../components/LoginForm.vue'; // Página de login
+import UserHome from '../components/UserHome.vue'; // Página de estatísticas do usuário
+import ThemeAndDifficultySelection from '../components/games/ThemeAndDifficultSelection.vue'; // Tela de seleção de tema/dificuldade
 import MemoryGame from '../components/games/MemoryGame.vue';
+import RankingPage from '../components/RankingPage.vue';
 
 const routes = [
+  { path: '/', name: 'WelcomePage', component: WelcomePage },
+  { path: '/register', name: 'RegisterPage', component: RegisterPage },
   {
-    path: '/',
+    path: '/login',
     name: 'Login',
     component: LoginForm,
   },
   {
-    path: '/games', // Caminho para a página de seleção de jogos
-    name: 'GameSelection',
-    component: GameSelection, // Componente da página de seleção de jogos
+    path: '/home',
+    name: 'UserHome',
+    component: UserHome,
   },
   {
-    path: '/memory', // Caminho para a página de seleção de jogos
+    path: '/select',
+    name: 'ThemeAndDifficulty',
+    component: ThemeAndDifficultySelection,
+  },
+  {
+    path: '/memory',
     name: 'MemoryGame',
-    component: MemoryGame, // Componente da página de seleção de jogos
+    component: MemoryGame,
+  },
+  {
+    path: '/ranking',
+    name: 'RankingPage', // Atualize o nome da rota para ser multi-palavra
+    component: RankingPage,
   },
 ];
 
