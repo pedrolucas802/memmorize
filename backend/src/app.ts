@@ -12,6 +12,9 @@ app.use(bodyParser.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/game", gameRouter);
+app.get("/api/health", (req, res) => {
+  res.status(200).send({ status: "OK" });
+});
 
 console.log("Initializing scheduler...");
 cronUpdateLeaderboard.start();
