@@ -38,8 +38,12 @@ export class GameController {
       select: { id: true, name: true, totalScore: true },
     });
 
-    const raking = users.findIndex((a) => a.id === user.id) + 1;
+    const rank = users.findIndex((a) => a.id === user.id) + 1;
 
-    return res.status(200).send(raking);
+    return res.status(200).send({
+      rank,
+      score: users.find((a) => a.id === user?.id)?.totalScore,
+      name: users.find((a) => a.id === user?.id)?.name,
+    });
   }
 }
