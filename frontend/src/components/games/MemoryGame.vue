@@ -37,6 +37,7 @@
 import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Confetti from 'vue-confetti';
+import axios from 'axios';
 // import axios from 'axios'; // Descomentado quando o backend estiver disponível
 
 interface Card {
@@ -136,15 +137,14 @@ export default defineComponent({
         clearInterval(interval);
         calculateScore();
         // Enviar pontuação ao backend (comentado enquanto backend não disponível)
-        /*
         try {
-          await axios.post('/register-match', { score: score.value }, {
+           axios.post(`${process.env.VUE_APP_API_URL}/api/game/register-match`, { score: score.value }, {
             headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` },
           });
         } catch (error) {
           console.error('Erro ao registrar a partida:', error);
         }
-        */
+        
       }
     };
 
