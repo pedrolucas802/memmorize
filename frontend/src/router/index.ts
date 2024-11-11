@@ -32,7 +32,7 @@ const routes = [
   },
   {
     path: '/ranking',
-    name: 'RankingPage', // Atualize o nome da rota para ser multi-palavra
+    name: 'RankingPage',
     component: RankingPage,
   },
 ];

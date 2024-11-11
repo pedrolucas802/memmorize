@@ -23,6 +23,12 @@ interface LeaderboardUser {
   totalScore: number;
 }
 
+interface LeaderboardUserRankScore {
+  rank: number;
+  score: number;
+  name: string;
+}
+
 export default defineComponent({
   components: {
     NavBar,
@@ -34,39 +40,38 @@ export default defineComponent({
       score: 0,
     });
 
-    // Obtenha o token JWT armazenado (exemplo usando localStorage)
     const token = localStorage.getItem('jwtToken');
 
-    // Função para buscar ranking e encontrar o usuário logado
     const fetchUserRanking = async () => {
       try {
-        const response = await axios.get<LeaderboardUser[]>('/leaderboard', {
+        const response = await axios.get<LeaderboardUserRankScore>(`${process.env.VUE_APP_API_URL}/api/game/leaderboard/me`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Adiciona o token ao cabeçalho
+            Authorization: `Bearer ${token}`, 
           },
         });
 
-        // Dados do ranking de todos os usuários
-        const leaderboard = response.data;
+        const {rank,score, name} = response.data;
 
-        // Encontre a posição do usuário logado
-        const userIndex = leaderboard.findIndex((u: LeaderboardUser) => u.name === user.value.name);
+        user.value.rank = rank
+        user.value.score = score
+        user.value.name = name
+
+
+        // const userIndex = leaderboard.findIndex((u: LeaderboardUser) => u.name === user.value.name);
         
-        if (userIndex !== -1) {
-          user.value.rank = userIndex + 1; // Posição no ranking (índice + 1)
-          user.value.score = leaderboard[userIndex].totalScore;
-        } else {
-          console.warn("Usuário não encontrado no ranking.");
-        }
+        // if (userIndex !== -1) {
+        //   user.value.rank = userIndex + 1; 
+        //   user.value.score = leaderboard[userIndex].totalScore;
+        // } else {
+        //   console.warn("Usuário não encontrado no ranking.");
+        // }
       } catch (error) {
         console.error("Erro ao buscar o ranking:", error);
       }
     };
 
-    // Função para definir o nome do usuário logado (simulação)
     const loadUserName = () => {
-      // Exemplo de como definir o nome do usuário a partir de uma fonte local (substitua conforme necessário)
-      user.value.name = localStorage.getItem('userName') || 'Usuário'; // Ajuste conforme sua lógica de autenticação
+      user.value.name = localStorage.getItem('userName') || 'Usuário';
     };
 
     onMounted(() => {

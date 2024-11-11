@@ -41,17 +41,20 @@ export default defineComponent({
   setup() {
     const leaderboard = ref<LeaderboardUser[]>([]);
 
-    // Função para buscar o ranking dos usuários
     const fetchLeaderboard = async () => {
       try {
-        const response = await axios.get('/leaderboard', {
+        const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/game/leaderboard`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`, // Adiciona o token JWT no cabeçalho
+            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`, // Token JWT
           },
         });
         leaderboard.value = response.data;
       } catch (error) {
-        console.error("Erro ao buscar o ranking:", error);
+        if (axios.isAxiosError(error) && error.response) {
+          console.error("Erro ao buscar o ranking:", error.response.data.error);
+        } else {
+          console.error("Erro ao conectar com o servidor.");
+        }
       }
     };
 

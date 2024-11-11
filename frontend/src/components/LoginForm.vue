@@ -54,6 +54,7 @@
 </template>
 
 <script lang="ts">
+import axios from 'axios';
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 // import axios from 'axios'; // Comentado enquanto o backend não está integrado
@@ -64,48 +65,36 @@ export default defineComponent({
     const username = ref('');
     const password = ref('');
     const successMessage = ref('');
-    const errorMessage = ref(''); // Mensagem de erro deixada como vazia, pois não será utilizada agora
+    const errorMessage = ref(''); 
 
-    const onSubmit = () => {
-      // Lógica comentada para integração com o backend:
-      /*
+    const onSubmit = async () => {
       try {
-        const response = await axios.post('/login', {
+        const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/auth/login`, {
           email: username.value,
           password: password.value,
         });
 
-        // Armazena o token JWT no localStorage
         localStorage.setItem('jwtToken', response.data.token);
 
         successMessage.value = 'Login realizado com sucesso! Redirecionando para a página inicial...';
-        errorMessage.value = ''; // Limpa mensagem de erro
+        errorMessage.value = '';
         username.value = '';
         password.value = '';
 
         setTimeout(() => {
           router.push({ name: 'UserHome' });
         }, 3000);
+
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-          errorMessage.value = error.response.data.message || 'Email ou senha incorretos.';
+          errorMessage.value = error.response.data.error || 'Email ou senha incorretos.';
         } else {
           errorMessage.value = 'Erro ao conectar com o servidor. Tente novamente mais tarde.';
         }
-        successMessage.value = ''; // Limpa mensagem de sucesso
+        successMessage.value = ''; 
       }
-      */
-
-      // Lógica original que simula o login sem autenticação real
-      successMessage.value = 'Login realizado com sucesso! Redirecionando para a página inicial...';
-      username.value = '';
-      password.value = '';
-
-      // Redireciona para a página inicial após 3 segundos
-      setTimeout(() => {
-        router.push({ name: 'UserHome' });
-      }, 3000);
     };
+
 
     return {
       username,

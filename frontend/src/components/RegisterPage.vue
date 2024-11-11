@@ -70,6 +70,7 @@
 </template>
 
 <script lang="ts">
+import axios from 'axios';
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 // import axios from 'axios'; // Comentado para não utilizar axios enquanto o backend não estiver disponível
@@ -83,27 +84,27 @@ export default defineComponent({
     const successMessage = ref('');
     const errorMessage = ref(''); // Mensagem de erro deixada como vazia, pois não será utilizada agora
 
-    const onSubmit = () => {
-      // Lógica comentada para integração com o backend:
-      /*
+    const onSubmit = async () => {
       try {
-        const response = await axios.post('/register', {
+        const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/auth/register`, {
           name: name.value,
           email: email.value,
           password: password.value,
-        });
+        } );
+
         successMessage.value = 'Registro realizado com sucesso! Redirecionando para a página de login...';
         errorMessage.value = '';
         name.value = '';
         email.value = '';
         password.value = '';
+
         setTimeout(() => {
           router.push({ name: 'Login' });
         }, 3000);
       } catch (error) {
         if (axios.isAxiosError(error)) {
           if (error.response && error.response.data) {
-            errorMessage.value = error.response.data.message || 'Erro ao registrar. Tente novamente.';
+            errorMessage.value = error.response.data.error || 'Erro ao registrar. Tente novamente.';
           } else {
             errorMessage.value = 'Erro ao registrar. Tente novamente.';
           }
@@ -112,19 +113,8 @@ export default defineComponent({
         }
         successMessage.value = '';
       }
-      */
-
-      // Lógica original que simula o registro
-      successMessage.value = 'Registro realizado com sucesso! Redirecionando para a página de login...';
-      name.value = '';
-      email.value = '';
-      password.value = '';
-      
-      // Redireciona para a página de login após 3 segundos
-      setTimeout(() => {
-        router.push({ name: 'Login' });
-      }, 3000);
     };
+
 
     return {
       name,
