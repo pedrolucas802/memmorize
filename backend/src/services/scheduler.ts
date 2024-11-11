@@ -3,7 +3,7 @@ import cron, { ScheduledTask } from "node-cron";
 import { prisma } from "../database";
 
 const cronUpdateLeaderboard: ScheduledTask = cron.schedule(
-  "* * * * *",
+  "0 6 * * *",
   async () => {
     console.log("Updating leaderboard...");
 
