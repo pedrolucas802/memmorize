@@ -2,8 +2,9 @@ const { defineConfig } = require('@vue/cli-service');
 
 module.exports = defineConfig({
   transpileDependencies: true,
-  publicPath: '/',
+  publicPath: '/', 
   devServer: {
-    historyApiFallback: true, 
+    historyApiFallback: true,
   },
+  productionSourceMap: false,
 });
