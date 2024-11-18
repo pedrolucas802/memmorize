@@ -18,7 +18,7 @@
         class="memory-card"
         @click="flipCard(index)"
       >
-        <img v-if="card.flipped || card.matched" :src="card.image" alt="Card Image">
+        <img v-if="card.flipped || card.matched" :src="card.image" alt="Card Image" loading="lazy">
         <div v-else class="card-back"></div>
       </div>
     </div>
@@ -144,7 +144,7 @@ export default defineComponent({
         } catch (error) {
           console.error('Erro ao registrar a partida:', error);
         }
-        
+
       }
     };
 
@@ -168,9 +168,17 @@ export default defineComponent({
       router.push({ name: 'UserHome' });
     };
 
+    const preloadImages = (images: any) => {
+      images.forEach((image: any) => {
+        const img = new Image();
+        img.src = image;
+      });
+    };
+
     onMounted(() => {
       if (selectedTheme.value) {
         setupGame();
+        preloadImages(cards.value.map((card) => card.image));
       }
     });
 
