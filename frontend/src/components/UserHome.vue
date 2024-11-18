@@ -16,6 +16,7 @@
 import { defineComponent, onMounted, ref } from 'vue';
 import NavBar from '@/components/NavBar.vue';
 import axios from 'axios';
+import router from "@/router";
 
 // Definição da interface para o ranking dos usuários
 interface LeaderboardUser {
@@ -39,6 +40,13 @@ export default defineComponent({
       rank: null as number | null,
       score: 0,
     });
+
+    const checkAuthentication = () => {
+      if (!token) {
+        console.warn('Token JWT não encontrado. Redirecionando para a página de login.');
+        router.push('/login');
+      }
+    };
 
     const token = localStorage.getItem('jwtToken');
 
@@ -75,6 +83,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      checkAuthentication();
       loadUserName();
       fetchUserRanking();
     });
