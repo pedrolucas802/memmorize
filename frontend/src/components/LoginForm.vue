@@ -22,7 +22,7 @@
             type="text"
             id="username"
             v-model="username"
-            placeholder="Digite seu nome de usuário"
+            placeholder="Digite o seu e-mail"
             class="custom-input"
             required
           />
@@ -55,9 +55,8 @@
 
 <script lang="ts">
 import axios from 'axios';
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-// import axios from 'axios'; // Comentado enquanto o backend não está integrado
 
 export default defineComponent({
   setup() {
@@ -65,7 +64,14 @@ export default defineComponent({
     const username = ref('');
     const password = ref('');
     const successMessage = ref('');
-    const errorMessage = ref(''); 
+    const errorMessage = ref('');
+
+    const checkJWT = () => {
+      const token = localStorage.getItem('jwtToken');
+      if (token) {
+        router.push({ name: 'UserHome' });
+      }
+    };
 
     const onSubmit = async () => {
       try {
@@ -91,10 +97,13 @@ export default defineComponent({
         } else {
           errorMessage.value = 'Erro ao conectar com o servidor. Tente novamente mais tarde.';
         }
-        successMessage.value = ''; 
+        successMessage.value = '';
       }
     };
 
+    onMounted(() => {
+      checkJWT();
+    });
 
     return {
       username,
@@ -106,6 +115,7 @@ export default defineComponent({
   },
 });
 </script>
+
 
 <style scoped>
 .login-page {
