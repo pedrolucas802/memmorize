@@ -126,7 +126,7 @@ export default defineComponent({
         setTimeout(() => {
           firstCard.flipped = false;
           secondCard.flipped = false;
-        }, 1000);
+        }, 1500);
       }
       flippedCardIndex.value = null;
     };
