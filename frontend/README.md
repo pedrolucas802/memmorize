@@ -1,4 +1,4 @@
-# memorize-front
+# memorize
 
 ## Project setup
 ```
