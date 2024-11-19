@@ -4,16 +4,23 @@
     <!-- Conteúdo da página UserHome -->
     <div class="user-home-content">
       <h1>Olá, {{ user.name }}! Receba às boas-vindas ao Memorize!</h1>
-      <div class="user-stats">
-        <h2>Seu ranking atual é: {{ user.rank }}</h2>
-        <h2>Sua pontuação total é: {{ user.score }}</h2>
+      <div class="dashboard">
+        <div class="dashboard-card">
+          <h2>Seu ranking atual:</h2>
+          <p class="dashboard-value">{{ user.rank }}</p>
+        </div>
+        <div class="dashboard-card">
+          <h2>Sua pontuação total:</h2>
+          <p class="dashboard-value">{{ formattedScore }}</p>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
+
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import {computed, defineComponent, onMounted, ref} from 'vue';
 import NavBar from '@/components/NavBar.vue';
 import axios from 'axios';
 import router from "@/router";
@@ -82,6 +89,10 @@ export default defineComponent({
       user.value.name = localStorage.getItem('userName') || 'Usuário';
     };
 
+    const formattedScore = computed(() => {
+      return user.value.score.toLocaleString('en-US');
+    });
+
     onMounted(() => {
       checkAuthentication();
       loadUserName();
@@ -90,6 +101,7 @@ export default defineComponent({
 
     return {
       user,
+      formattedScore
     };
   },
 });
@@ -99,21 +111,64 @@ export default defineComponent({
 .user-home-content {
   padding: 2rem;
   text-align: center;
-}
-
-.user-stats {
-  margin-top: 1.5rem;
+  background-color: white; /* Subtle background color */
+  border-radius: 10px;
+  margin: 2rem auto;
+  width: 80%;
 }
 
 h1 {
-  font-size: 24px;
+  font-size: 32px;
   color: #43636E;
   font-weight: bold;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
-  font-size: 18px;
-  color: gray;
-  margin-top: 1rem;
+.dashboard {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.dashboard-card {
+  background: #f7f9fc;
+  flex: 1;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #6c757d; /* Muted color for card title */
+  margin-bottom: 1rem;
+}
+
+.dashboard-value {
+  font-size: 56px;
+  font-weight: bold;
+  color: #43636E; /* Highlighted value */
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .dashboard-card {
+    width: 100%;
+  }
 }
 </style>
