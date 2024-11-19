@@ -1,21 +1,20 @@
 <template>
   <div class="login-page">
+    <img src="@/assets/Elephant.png" alt="Icon" width="125" height="100" class="navbar-logo" />
+
     <h2 class="main-title">Faça login na sua conta</h2>
 
-    <!-- Mensagem de Sucesso -->
     <div v-if="successMessage" class="success-message">
       {{ successMessage }}
     </div>
 
-    <!-- Mensagem de Erro (não será exibida enquanto o backend não estiver integrado) -->
     <div v-if="errorMessage" class="error-message">
       {{ errorMessage }}
     </div>
 
     <form v-if="!successMessage" @submit.prevent="onSubmit" class="login-form">
-      <!-- Nome do usuário -->
       <div class="input-group">
-        <label for="username" class="input-label">Nome do usuário</label>
+        <label for="username" class="input-label large-fornt" >E-mail do usuário</label>
         <div class="input-wrapper">
           <span class="input-icon"><i class="pi pi-user"></i></span>
           <input
@@ -29,9 +28,8 @@
         </div>
       </div>
 
-      <!-- Senha -->
       <div class="input-group">
-        <label for="password" class="input-label">Senha</label>
+        <label for="password" class="input-label large-fornt">Senha</label>
         <div class="input-wrapper">
           <span class="input-icon"><i class="pi pi-lock"></i></span>
           <input
@@ -45,7 +43,6 @@
         </div>
       </div>
 
-      <!-- Botão de Login -->
       <div class="button-container">
         <button type="submit" class="login-button">Entrar</button>
       </div>
@@ -226,5 +223,9 @@ export default defineComponent({
 .login-button:hover {
   background-color: #365555;
   transform: scale(1.05);
+}
+
+.large-fornt{
+  font-size:22px;
 }
 </style>

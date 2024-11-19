@@ -1,5 +1,6 @@
 <template>
   <div class="welcome-container">
+    <img src="@/assets/Elephant.png" alt="Icon" width="100" height="100" class="navbar-logo" />
     <h2 class="welcome-title">Você já tem uma conta?</h2>
     <div class="button-group">
       <button @click="goToLogin" class="welcome-button">Sim</button>

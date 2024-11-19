@@ -1,36 +1,39 @@
 <template>
-  <div v-if="gameFinished" class="congrats-screen">
-    <div class="congrats-message">
-      <h1>Parabéns!</h1>
-      <p>Você concluiu o jogo em {{ timer }} segundos!</p>
-      <p>Sua pontuação foi de: {{ score }} pontos</p>
-      <button @click="goToHome">Voltar à Tela Inicial</button>
+  <div class="game-container">
+    <div v-if="gameFinished" class="congrats-screen">
+      <div class="congrats-message">
+        <h1>Parabéns!</h1>
+        <p>Você concluiu o jogo em {{ timer }} segundos!</p>
+        <p>Sua pontuação foi de: {{ score }} pontos</p>
+        <button @click="goToHome">Voltar à Tela Inicial</button>
+      </div>
+      <Confetti />
     </div>
-    <Confetti />
-  </div>
 
-  <div v-else-if="gameStarted" class="game-container">
-    <div class="timer">Cronômetro: {{ timer }}s</div>
-    <div class="memory-game">
-      <div
-        v-for="(card, index) in cards"
-        :key="index"
-        class="memory-card"
-        @click="flipCard(index)"
-      >
-        <img v-if="card.flipped || card.matched" :src="card.image" alt="Card Image" loading="lazy">
-        <div v-else class="card-back"></div>
+    <div v-else-if="gameStarted" class="game-container">
+      <div class="timer">Cronômetro: {{ timer }}s</div>
+      <div class="memory-game">
+        <div
+            v-for="(card, index) in cards"
+            :key="index"
+            class="memory-card"
+            @click="flipCard(index)"
+        >
+          <img v-if="card.flipped || card.matched" :src="card.image" alt="Card Image" loading="lazy">
+          <div v-else class="card-back"></div>
+        </div>
       </div>
     </div>
-  </div>
-  <div v-else>
-    <p>Carregando o jogo...</p>
+    <div v-else>
+      <p>Carregando o jogo...</p>
+    </div>
+
+    <!-- Botão de Sair, sempre visível no final da página -->
+    <div class="exit-button-container">
+      <button @click="goToHome" class="exit-button">Sair</button>
+    </div>
   </div>
 
-  <!-- Botão de Sair, sempre visível no final da página -->
-  <div class="exit-button-container">
-    <button @click="goToHome" class="exit-button">Sair</button>
-  </div>
 </template>
 
 <script lang="ts">
@@ -60,10 +63,9 @@ export default defineComponent({
     const cards = ref<Card[]>([]);
     const flippedCardIndex = ref<number | null>(null);
     const timer = ref(0);
-    const score = ref(0); // Adiciona variável de pontuação
+    const score = ref(0);
     let interval: number;
 
-    // Mapeamento para o número de pares de cartas baseado na dificuldade
     const difficultyCardCounts = {
       Fácil: 8,
       Médio: 12,
@@ -103,14 +105,20 @@ export default defineComponent({
       return cards;
     };
 
+    const isCheckingMatch = ref(false); // fix: only two cards at a time
+
     const flipCard = (index: number) => {
-      if (!cards.value[index].flipped && !cards.value[index].matched) {
-        cards.value[index].flipped = true;
-        if (flippedCardIndex.value === null) {
-          flippedCardIndex.value = index;
-        } else {
-          checkForMatch(index);
-        }
+      if (isCheckingMatch.value || cards.value[index].flipped || cards.value[index].matched) {
+        return;
+      }
+
+      cards.value[index].flipped = true;
+
+      if (flippedCardIndex.value === null) {
+        flippedCardIndex.value = index;
+      } else {
+        isCheckingMatch.value = true;
+        checkForMatch(index);
       }
     };
 
@@ -122,12 +130,15 @@ export default defineComponent({
         firstCard.matched = true;
         secondCard.matched = true;
         checkGameFinished();
+        isCheckingMatch.value = false;
       } else {
         setTimeout(() => {
           firstCard.flipped = false;
           secondCard.flipped = false;
+          isCheckingMatch.value = false;
         }, 1500);
       }
+
       flippedCardIndex.value = null;
     };
 
@@ -136,7 +147,6 @@ export default defineComponent({
         gameFinished.value = true;
         clearInterval(interval);
         calculateScore();
-        // Enviar pontuação ao backend (comentado enquanto backend não disponível)
         try {
            axios.post(`${process.env.VUE_APP_API_URL}/api/game/register-match`, { score: score.value }, {
             headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` },
@@ -201,42 +211,57 @@ export default defineComponent({
 
 
 <style scoped>
+
 .game-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 60px;
-  padding-bottom: 40px;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 10px;
+  margin: 2rem auto;
+  width: 90%;
+  max-width: 900px;
 }
 
-.memory-game {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr); /* 8 cards por linha em telas grandes */
-  gap: 10px;
-  justify-content: center;
-}
-
-/* Timer */
+/* Timer Styling */
 .timer {
   position: absolute;
   top: 20px;
   right: 20px;
-  font-size: 1.2em;
+  font-size: 1.5em;
   font-weight: bold;
+  color: #007bff;
+  background: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Card Style */
+/* Memory Game Grid */
+.memory-game {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* Default: 6 cards per row */
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* Card Styling */
 .memory-card {
-  width: 100px;
-  height: 150px;
+  width: 120px;
+  height: 170px;
   border-radius: 8px;
   background-color: #f0f0f0;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.5s;
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.memory-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .memory-card img {
@@ -250,10 +275,17 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   border-radius: 8px;
-  background-color: #888888;
+  background-color: #007bff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 2em;
+  font-weight: bold;
+  letter-spacing: 2px;
 }
 
-/* Congrats Screen */
+/* Congrats Screen Styling */
 .congrats-screen {
   position: fixed;
   top: 0;
@@ -267,11 +299,14 @@ export default defineComponent({
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
   text-align: center;
+  z-index: 10;
 }
 
 .congrats-message h1 {
   font-size: 3em;
   margin-bottom: 0.5em;
+  color: #4caf50;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .congrats-message p {
@@ -285,74 +320,21 @@ export default defineComponent({
   border: none;
   background-color: #4caf50;
   color: white;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .congrats-message button:hover {
   background-color: #45a049;
+  transform: translateY(-3px);
 }
 
-/* Responsividade */
-@media (max-width: 1200px) {
-  .memory-game {
-    grid-template-columns: repeat(6, 1fr); /* 6 cards por linha */
-  }
-  .memory-card {
-    width: 90px;
-    height: 135px;
-  }
-}
-
-@media (max-width: 992px) {
-  .memory-game {
-    grid-template-columns: repeat(4, 1fr); /* 4 cards por linha */
-  }
-  .memory-card {
-    width: 80px;
-    height: 120px;
-  }
-}
-
-@media (max-width: 768px) {
-  .memory-game {
-    grid-template-columns: repeat(3, 1fr); /* 3 cards por linha */
-  }
-  .memory-card {
-    width: 70px;
-    height: 105px;
-  }
-}
-
-@media (max-width: 576px) {
-  .memory-game {
-    grid-template-columns: repeat(4, 1fr); /* 2 cards por linha */
-  }
-  .memory-card {
-    width: 60px;
-    height: 90px;
-  }
-}
-
-
-@media (max-width: 350px) {
-  .memory-game {
-    grid-template-columns: repeat(3, 1fr); /* 2 cards por linha */
-  }
-  .memory-card {
-    width: 50px;
-    height: 80px;
-  }
-}
-
+/* Exit Button */
 .exit-button-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
-  /* position: fixed; */
-  bottom: 20px;
-  left: 0;
-  right: 0;
+  margin-top: 20px;
 }
 
 .exit-button {
@@ -363,12 +345,51 @@ export default defineComponent({
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .exit-button:hover {
   background-color: #c9302c;
+  transform: translateY(-3px);
 }
 
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .memory-game {
+    grid-template-columns: repeat(5, 1fr); /* 5 cards per row */
+  }
+}
 
+@media (max-width: 992px) {
+  .memory-game {
+    grid-template-columns: repeat(4, 1fr); /* 4 cards per row */
+  }
+
+  .memory-card {
+    width: 100px;
+    height: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .memory-game {
+    grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+  }
+
+  .memory-card {
+    width: 90px;
+    height: 135px;
+  }
+}
+
+@media (max-width: 576px) {
+  .memory-game {
+    grid-template-columns: repeat(2, 1fr); /* 2 cards per row */
+  }
+
+  .memory-card {
+    width: 80px;
+    height: 120px;
+  }
+}
 </style>
